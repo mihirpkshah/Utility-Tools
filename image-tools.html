@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Tools – Utility Tools</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">⚙️ Utility Tools</a>
+  <a href="index.html">Home</a>
+  <a href="qr-generator.html">QR Generator</a>
+  <a href="image-tools.html" class="active">Image Tools</a>
+</nav>
+
+<main class="page-container">
+  <h1 class="page-title">🖼️ Image Manipulation</h1>
+  <p class="page-subtitle">Remove background, resize, compress or convert images — all in your browser.</p>
+
+  <div class="img-tool-layout">
+
+    <!-- ── Left: upload + source preview ── -->
+    <div>
+      <div class="panel">
+        <h3>Upload Image</h3>
+        <div class="drop-zone" id="drop-zone" role="button" tabindex="0"
+             aria-label="Click or drag and drop an image here">
+          <span class="dz-icon">📁</span>
+          <p><strong>Click</strong> to browse or <strong>drag &amp; drop</strong> an image here</p>
+          <p style="margin-top:.35rem;font-size:.8rem;">PNG, JPEG, WebP, GIF, BMP supported</p>
+        </div>
+        <input type="file" id="file-input" accept="image/*" style="display:none" />
+
+        <div class="img-preview-box" id="src-preview">
+          <img id="src-img" src="" alt="Source image preview" />
+          <p class="img-meta" id="src-meta"></p>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="panel" id="result-box" style="display:none;">
+        <h3>Result</h3>
+        <div class="img-preview-box" style="display:block;">
+          <canvas id="result-canvas"></canvas>
+          <p class="img-meta" id="result-meta"></p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="download-result" disabled>⬇️ Download</button>
+        </div>
+      </div>
+
+      <div class="status-bar" id="img-status"></div>
+    </div>
+
+    <!-- ── Right: operation tabs ── -->
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-bg">🧹 Remove BG</button>
+        <button class="tab-btn" data-tab="tab-resize">↔️ Resize</button>
+        <button class="tab-btn" data-tab="tab-compress">🗜️ Compress</button>
+        <button class="tab-btn" data-tab="tab-convert">🔄 Convert</button>
+      </div>
+
+      <!-- ── Tab: Remove Background ── -->
+      <div class="tab-pane active" id="tab-bg">
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">
+          Replaces near-white pixels with transparency. The output is always a <strong>PNG</strong>.
+        </p>
+
+        <div class="form-group">
+          <label>
+            White threshold:&nbsp;<strong id="bg-thresh-val">230</strong>
+            <span style="color:var(--text-muted);font-weight:400;font-size:.82rem;">
+              (higher = more aggressive removal)
+            </span>
+          </label>
+          <input type="range" id="bg-thresh" min="150" max="255" value="230" />
+        </div>
+
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;">
+          Tip: increase the threshold if faint grey areas remain, decrease it to avoid removing coloured parts.
+        </p>
+
+        <button class="btn btn-primary" id="bg-remove-btn">🧹 Remove White Background</button>
+      </div>
+
+      <!-- ── Tab: Resize ── -->
+      <div class="tab-pane" id="tab-resize">
+        <div class="form-group">
+          <label for="resize-mode">Resize mode</label>
+          <select id="resize-mode">
+            <option value="percent" selected>Scale by percentage</option>
+            <option value="pixels">Set exact dimensions</option>
+          </select>
+        </div>
+
+        <div id="resize-pct-wrap">
+          <div class="form-group">
+            <label>
+              Scale:&nbsp;<strong id="resize-pct-val">75%</strong>
+            </label>
+            <input type="range" id="resize-pct" min="5" max="200" value="75" />
+          </div>
+        </div>
+
+        <div id="resize-dim-wrap" style="display:none;">
+          <div class="form-group">
+            <label for="resize-w">Width (px)</label>
+            <input type="number" id="resize-w" placeholder="e.g. 800" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="resize-h">Height (px)</label>
+            <input type="number" id="resize-h" placeholder="e.g. 600" min="1" />
+          </div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:.5rem;">
+            <input type="checkbox" id="keep-aspect" checked />
+            <label for="keep-aspect" style="font-weight:400;cursor:pointer;">Keep aspect ratio</label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:.5rem;">
+          <label for="resize-fmt">Output format</label>
+          <select id="resize-fmt">
+            <option value="png" selected>PNG</option>
+            <option value="jpg">JPEG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="resize-btn" style="margin-top:.5rem;">↔️ Resize Image</button>
+      </div>
+
+      <!-- ── Tab: Compress ── -->
+      <div class="tab-pane" id="tab-compress">
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">
+          Lower quality = smaller file size. JPEG and WebP support quality control; PNG is lossless and ignores this setting.
+        </p>
+
+        <div class="form-group">
+          <label for="compress-fmt">Output format</label>
+          <select id="compress-fmt">
+            <option value="jpg" selected>JPEG</option>
+            <option value="webp">WebP</option>
+            <option value="png">PNG (lossless)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>
+            Quality:&nbsp;<strong id="compress-qual-val">75%</strong>
+          </label>
+          <input type="range" id="compress-quality" min="1" max="100" value="75" />
+        </div>
+
+        <button class="btn btn-primary" id="compress-btn">🗜️ Compress Image</button>
+      </div>
+
+      <!-- ── Tab: Convert ── -->
+      <div class="tab-pane" id="tab-convert">
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.25rem;">
+          Convert the uploaded image to a different file format at full quality.
+        </p>
+
+        <div class="form-group">
+          <label for="convert-fmt">Target format</label>
+          <select id="convert-fmt">
+            <option value="png" selected>PNG</option>
+            <option value="jpg">JPEG</option>
+            <option value="webp">WebP</option>
+            <option value="bmp">BMP</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="convert-btn">🔄 Convert Image</button>
+      </div>
+
+    </div><!-- /panel (tabs) -->
+  </div><!-- /img-tool-layout -->
+</main>
+
+<footer>
+  <p>All processing is done locally in your browser. No files are sent to any server.</p>
+</footer>
+
+<script src="js/image-tools.js"></script>
+</body>
+</html>
