@@ -1,0 +1,6 @@
+{
+  "hosting": {
+    "site": "archts-tools",
+    "public": "public"
+  }
+}
