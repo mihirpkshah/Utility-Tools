@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator – Utility Tools</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- qrcode-generator (MIT) — used for canvas-level QR rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"
+          integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">⚙️ Utility Tools</a>
+  <a href="index.html">Home</a>
+  <a href="qr-generator.html" class="active">QR Generator</a>
+  <a href="image-tools.html">Image Tools</a>
+</nav>
+
+<main class="page-container">
+  <h1 class="page-title">📲 QR Code Generator</h1>
+  <p class="page-subtitle">Generate a customisable QR code from any URL or text.</p>
+
+  <div class="two-col">
+
+    <!-- ── Left column: controls ── -->
+    <div>
+
+      <!-- URL / Text -->
+      <div class="panel">
+        <h3>Content</h3>
+        <div class="form-group">
+          <label for="qr-url">URL or Text to encode</label>
+          <input type="text" id="qr-url" placeholder="https://example.com" autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div class="panel">
+        <h3>Appearance</h3>
+
+        <div class="form-group">
+          <label>Foreground colour</label>
+          <div class="color-row">
+            <input type="color" id="fg-color" value="#000000" />
+            <span>Dot colour</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Background colour</label>
+          <div class="color-row">
+            <input type="color" id="bg-color" value="#ffffff" />
+            <span>Fill colour</span>
+            <label style="display:flex;align-items:center;gap:.35rem;font-weight:400;cursor:pointer">
+              <input type="checkbox" id="bg-transparent" /> Transparent
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dot shape</label>
+          <div class="shape-options">
+            <button class="shape-btn active" data-dot="square">■ Square</button>
+            <button class="shape-btn" data-dot="rounded">▣ Rounded</button>
+            <button class="shape-btn" data-dot="circle">● Circle</button>
+            <button class="shape-btn" data-dot="diamond">◆ Diamond</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="qr-size">Output size</label>
+          <select id="qr-size">
+            <option value="200">200 × 200 px</option>
+            <option value="300" selected>300 × 300 px</option>
+            <option value="400">400 × 400 px</option>
+            <option value="512">512 × 512 px</option>
+            <option value="800">800 × 800 px</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="error-level">Error correction level</label>
+          <select id="error-level">
+            <option value="L">L – Low (7 %)</option>
+            <option value="M" selected>M – Medium (15 %)</option>
+            <option value="Q">Q – Quartile (25 %)</option>
+            <option value="H">H – High (30 %) — best for logos</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Centre logo -->
+      <div class="panel">
+        <h3>Centre Logo (optional)</h3>
+        <div class="form-group">
+          <label for="logo-upload">Upload logo image</label>
+          <input type="file" id="logo-upload" accept="image/*"
+                 style="font-size:.9rem;padding:.4rem 0;" />
+        </div>
+        <div class="form-group">
+          <label>
+            Logo size:&nbsp;<strong id="logo-size-val">20%</strong>
+          </label>
+          <input type="range" id="logo-size" min="10" max="40" value="20" />
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted)">
+          Tip: use <strong>H</strong> error-correction for best scannability with a logo.
+        </p>
+      </div>
+
+      <!-- Generate button -->
+      <div class="btn-row">
+        <button class="btn btn-primary" id="generate-btn">⚡ Generate QR Code</button>
+      </div>
+
+      <div class="status-bar" id="qr-status"></div>
+
+    </div>
+
+    <!-- ── Right column: preview ── -->
+    <div class="panel" id="qr-preview-wrap" style="display:none;align-items:center;gap:1.2rem;flex-direction:column;">
+      <h3 style="align-self:flex-start;">Preview</h3>
+      <div id="qr-canvas-container"></div>
+      <button class="btn btn-secondary" id="download-btn" disabled>
+        ⬇️ Download PNG
+      </button>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>All processing is done locally in your browser. No files are sent to any server.</p>
+</footer>
+
+<script src="js/qr-generator.js"></script>
+</body>
+</html>
